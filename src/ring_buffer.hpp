@@ -15,8 +15,6 @@ private:
 public:
   static_assert(N > 0, "RingBuffer size must be positive");
 
-  RingBuffer() {};
-
   template <class Func> void visit(Func &&func) const {
     std::size_t elements_count =
         total_records_count_ < N ? total_records_count_ : N;
@@ -29,20 +27,20 @@ public:
 
   void push(const Value &element) {
     buffer_[write_index_] = element;
-    if (!total_record_overflow_)
+    if (!total_record_overflow_) {
       ++total_records_count_;
-    if (total_records_count_ == cRecordCountMax)
+    }
+    if (total_records_count_ == cRecordCountMax) {
       total_record_overflow_ = true;
+    }
     write_index_ = (write_index_ + 1) % N;
-  };
-
-  std::size_t get_capacity() const noexcept { return N; }
-
-  std::size_t get_records_count() const noexcept {
-    return total_records_count_;
   }
 
-  bool get_records_count_overflow() const noexcept {
+  std::size_t capacity() const noexcept { return N; }
+
+  std::size_t records_count() const noexcept { return total_records_count_; }
+
+  bool records_count_overflow() const noexcept {
     return total_record_overflow_;
   }
 };
